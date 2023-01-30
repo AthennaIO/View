@@ -30,6 +30,19 @@ export default {
   templates: {
     /*
     |--------------------------------------------------------------------------
+    | Register templates
+    |--------------------------------------------------------------------------
+    |
+    | Set if View Facade should register templates automatically. Setting this
+    | option to "false" will let the bootstrap of the application more performatic,
+    | but you are not going to be able to run Artisan "make:..." commands.
+    |
+    */
+
+    register: true,
+
+    /*
+    |--------------------------------------------------------------------------
     | Paths
     |--------------------------------------------------------------------------
     |
@@ -44,32 +57,33 @@ export default {
 
     /*
     |--------------------------------------------------------------------------
-    | Register templates
-    |--------------------------------------------------------------------------
-    |
-    | Set if View Facade should register templates automatically. Setting this
-    | option to "false" will let the bootstrap of the application more performatic,
-    | but you are not going to be able to run Artisan "make:..." commands.
-    |
-    */
-
-    register: true,
-
-    /*
-    |--------------------------------------------------------------------------
     | Use custom templates
     |--------------------------------------------------------------------------
     |
-    | Set if View Facade should use custom template files registered inside
-    | "resources/templates" folder by "node artisan template:customize" command.
-    | Setting this option as "false" will let the bootstrap of the application
-    | more performatic, but Athenna will not be able to auto register the
-    | templates of "resources/templates" folder, but you can manually register
-    | the templates in the "view.templates.paths" object above.
+    | Set if View Facade should load custom template files registered in the
+    | "view.templates.customTemplatesPath" options. Athenna default templates
+    | could be customized by running "template:customize" command. Setting this
+    | option as "false" will let the bootstrap of the application more performatic,
+    | but Athenna will not be able to auto register the custom templates. But you
+    | can manually register the templates in the "view.templates.paths" object above.
     |
     */
 
     useCustom: true,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Custom templates path
+    |--------------------------------------------------------------------------
+    |
+    | Set the custom templates paths that "template:customize" command and View
+    | facade will use to store and load your custom templates. By default the
+    | path is set as "resources/templates". All the ".edge" files found inside
+    | will be loaded by their name, example: 'artisan::command'.
+    |
+    */
+
+    customTemplatesPath: Path.resources('templates'),
   },
 
   /*

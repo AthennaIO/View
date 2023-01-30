@@ -9,7 +9,7 @@
 
 import { Edge } from 'edge.js'
 import { Config } from '@athenna/config'
-import { File, Folder, Is, Path } from '@athenna/common'
+import { File, Folder, Is } from '@athenna/common'
 import { EmptyComponentException } from '#src/Exceptions/EmptyComponentException'
 import { NotFoundTemplateException } from '#src/Exceptions/NotFoundTemplateException'
 import { AlreadyExistComponentException } from '#src/Exceptions/AlreadyExistComponentException'
@@ -375,7 +375,9 @@ export class ViewImpl {
    * If "view.templates.useCustom" is set to false, Athenna will
    * not register custom templates.
    */
-  private registerCustomTemplates(path = Path.resources('templates')): void {
+  private registerCustomTemplates(
+    path = Config.get('view.templates.customTemplatesPath'),
+  ): void {
     if (this.cantRegisterTemplates()) {
       return
     }
