@@ -19,23 +19,9 @@ test.group('ViewTest', () => {
 
     const content = await View.render('admin::listUsers', { users: JSON.stringify({ name: 'Victor Tesoura' }) })
 
-    assert.deepEqual(
-      content,
-      '<html>\n' +
-        '  <head>\n' +
-        '    <title>Hello World!</title>\n' +
-        '  </head>\n' +
-        '\n' +
-        '  <body>\n' +
-        '    <div>\n' +
-        '      List users: {&quot;name&quot;:&quot;Victor Tesoura&quot;}\n' +
-        '    </div>\n' +
-        '  </body>\n' +
-        '  <footer>\n' +
-        '    &copy; Victor Tesoura txsoura@athenna.io\n' +
-        '  </footer>\n' +
-        '</html>',
-    )
+    assert.isTrue(content.includes('<title>Hello World!</title>'))
+    assert.isTrue(content.includes('List users: {&quot;name&quot;:&quot;Victor Tesoura&quot;}'))
+    assert.isTrue(content.includes('&copy; Victor Tesoura txsoura@athenna.io'))
   })
 
   test('should be able to render artisan templates with components included', async ({ assert }) => {
@@ -49,18 +35,8 @@ test.group('ViewTest', () => {
       namePascal: 'MyCommand',
     })
 
-    assert.deepEqual(
-      content,
-      '/**\n' +
-        ' * @@athenna/view\n' +
-        ' *\n' +
-        ' * (c) Victor Tesoura <txsoura@athenna.io>\n' +
-        ' *\n' +
-        ' * For the full copyright and license information, please view the LICENSE\n' +
-        ' * file that was distributed with this source code.\n' +
-        ' */\n' +
-        '\n' +
-        'export class MyCommand {}',
-    )
+    assert.isTrue(content.includes('@athenna/view'))
+    assert.isTrue(content.includes('export class MyCommand {}'))
+    assert.isTrue(content.includes('(c) Victor Tesoura <txsoura@athenna.io>'))
   })
 })

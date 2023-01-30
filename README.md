@@ -1,6 +1,6 @@
-# Template 📔
+# View 📄
 
-> Template for new projects
+> The Athenna template engine. Built on top of Edge.
 
 [![GitHub followers](https://img.shields.io/github/followers/athennaio.svg?style=social&label=Follow&maxAge=2592000)](https://github.com/athennaio?tab=followers)
 [![GitHub stars](https://img.shields.io/github/stars/AthennaIO/View.svg?style=social&label=Star&maxAge=2592000)](https://github.com/AthennaIO/View/stargazers/)
