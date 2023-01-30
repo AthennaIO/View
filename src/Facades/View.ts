@@ -1,5 +1,5 @@
 /**
- * @athenna/template
+ * @athenna/view
  *
  * (c) João Lenon <lenon@athenna.io>
  *
@@ -7,11 +7,7 @@
  * file that was distributed with this source code.
  */
 
-export class Bootstrap {
-  /**
-   * Executes the application.
-   */
-  static main(...args: string[]): string {
-    return `Bootstrap: ${args.join(' ')}`
-  }
-}
+import { Facade } from '@athenna/ioc'
+import { ViewImpl } from '#src/Views/ViewImpl'
+
+export const View = Facade.createFor<ViewImpl>('Athenna/Core/View')

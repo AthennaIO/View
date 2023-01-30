@@ -1,5 +1,5 @@
 /**
- * @athenna/template
+ * @athenna/view
  *
  * (c) João Lenon <lenon@athenna.io>
  *
@@ -7,4 +7,6 @@
  * file that was distributed with this source code.
  */
 
-export * from '#src/Bootstrap/Bootstrap'
+export * from './Facades/View.js'
+export * from './Views/ViewImpl.js'
+export * from './Providers/ViewProvider.js'
