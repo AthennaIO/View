@@ -44,31 +44,32 @@ export default {
 
     /*
     |--------------------------------------------------------------------------
+    | Register templates
+    |--------------------------------------------------------------------------
+    |
+    | Set if View Facade should register templates automatically. Setting this
+    | option to "false" will let the bootstrap of the application more performatic,
+    | but you are not going to be able to run Artisan "make:..." commands.
+    |
+    */
+
+    register: true,
+
+    /*
+    |--------------------------------------------------------------------------
     | Use custom templates
     |--------------------------------------------------------------------------
     |
     | Set if View Facade should use custom template files registered inside
     | "resources/templates" folder by "node artisan template:customize" command.
-    | Setting this option as "false" is more performatic, but Athenna will not
-    | be able to auto register the templates of "resources/templates" folder, but
-    | you can manually register the templates in the "paths" object above.
+    | Setting this option as "false" will let the bootstrap of the application
+    | more performatic, but Athenna will not be able to auto register the
+    | templates of "resources/templates" folder, but you can manually register
+    | the templates in the "view.templates.paths" object above.
     |
     */
 
     useCustom: true,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Register templates in production
-    |--------------------------------------------------------------------------
-    |
-    | Set if View Facade should register templates when "app.env" is equals to
-    | "production". Setting this option to "false" is more performatic, but you
-    | are not going to be able to run Artisan "make:..." commands.
-    |
-    */
-
-    registerInProduction: false,
   },
 
   /*

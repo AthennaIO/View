@@ -12,6 +12,7 @@ import { Config } from '@athenna/config'
 import { File, Folder, Is, Path } from '@athenna/common'
 import { EmptyComponentException } from '#src/Exceptions/EmptyComponentException'
 import { NotFoundTemplateException } from '#src/Exceptions/NotFoundTemplateException'
+import { AlreadyExistComponentException } from '#src/Exceptions/AlreadyExistComponentException'
 
 export class ViewImpl {
   /**
@@ -226,6 +227,10 @@ export class ViewImpl {
       throw new EmptyComponentException(name)
     }
 
+    if (this.hasComponent(name)) {
+      throw new AlreadyExistComponentException(name)
+    }
+
     this.edge.registerTemplate(name, { template: component })
 
     return this
@@ -300,14 +305,13 @@ export class ViewImpl {
    * ```
    */
   public createTemplateByPath(name: string, templatePath: string): ViewImpl {
-    if (!File.existsSync(templatePath)) {
+    const file = new File(templatePath, Buffer.from(''))
+
+    if (!file.fileExists) {
       return this
     }
 
-    return this.createTemplate(
-      name,
-      new File(templatePath).getContentSync().toString(),
-    )
+    return this.createTemplate(name, file.getContentSync().toString())
   }
 
   /**
@@ -332,7 +336,11 @@ export class ViewImpl {
    *    .removeTemplate('testing')
    */
   public removeTemplate(name: string): ViewImpl {
-    return this.removeTemplate(name)
+    if (!this.hasTemplate(name)) {
+      return this
+    }
+
+    return this.removeComponent(name)
   }
 
   /**
@@ -345,7 +353,7 @@ export class ViewImpl {
   }
 
   /**
-   * Register all templates from "view.templates" configuration.
+   * Register all templates from "view.templates.paths" configuration.
    */
   private registerTemplates(): void {
     if (this.cantRegisterTemplates()) {
@@ -372,37 +380,28 @@ export class ViewImpl {
       return
     }
 
-    if (!Config.get('view.templates.useCustom', true)) {
+    if (Config.isNot('view.templates.useCustom', true)) {
       return
     }
 
-    if (!Folder.existsSync(path)) {
-      return
-    }
+    const templates = this.getResourcesTemplates(path)
 
-    new Folder(path)
-      .getFilesByPattern('**/*.edge', true)
-      .forEach(template =>
-        this.createTemplate(
-          `artisan::${template.name}`,
-          template.getContentSync().toString(),
-        ),
-      )
+    templates.forEach(t =>
+      this.createTemplate(`artisan::${t.name}`, t.getContentSync().toString()),
+    )
   }
 
   /**
-   * Verify if is production and "view.templates.registerInProduction"
-   * is not true. There are no need to register templates when running
-   * the application in production because we are not going to make files.
+   * Verify if "view.templates.register" is not true. There are no need to
+   * register templates when running the application in production because
+   * we are not going to make files.
    *
    * But, depending on the application that the developer is building he
-   * can set "view.templates.registerInProduction" to true.
+   * can set "view.templates.register" to true. Is recommended to use the
+   * "Env('NODE_ENV', 'production')" to set this value.
    */
   private cantRegisterTemplates(): boolean {
-    return !(
-      Config.get('app.env', 'production') === 'production' &&
-      !Config.get('view.templates.registerInProduction', false)
-    )
+    return Config.isNot('view.templates.register', true)
   }
 
   /**
@@ -410,5 +409,19 @@ export class ViewImpl {
    */
   private isMountedOrIsTemplate(template: string): boolean {
     return this.hasViewDisk(template) || this.hasTemplate(template)
+  }
+
+  /**
+   * Get files by pattern if folder exists or return an
+   * empty array.
+   */
+  private getResourcesTemplates(path: string): File[] {
+    const folder = new Folder(path)
+
+    if (!folder.folderExists) {
+      return []
+    }
+
+    return folder.getFilesByPattern('**/*.edge', true)
   }
 }
