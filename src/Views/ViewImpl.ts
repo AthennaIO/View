@@ -11,6 +11,7 @@ import { Edge } from 'edge.js'
 import { Config } from '@athenna/config'
 import { File, Folder, Is, Path } from '@athenna/common'
 import { EmptyComponentException } from '#src/Exceptions/EmptyComponentException'
+import { NotFoundTemplateException } from '#src/Exceptions/NotFoundTemplateException'
 
 export class ViewImpl {
   /**
@@ -35,6 +36,10 @@ export class ViewImpl {
    * ```
    */
   public async render(template: string, data?: any): Promise<string> {
+    if (!this.isMountedOrIsTemplate(template)) {
+      throw new NotFoundTemplateException(template)
+    }
+
     return this.edge.render(template, data)
   }
 
@@ -47,6 +52,10 @@ export class ViewImpl {
    * ```
    */
   public renderSync(template: string, data?: any): string {
+    if (!this.isMountedOrIsTemplate(template)) {
+      throw new NotFoundTemplateException(template)
+    }
+
     return this.edge.renderSync(template, data)
   }
 
@@ -137,6 +146,10 @@ export class ViewImpl {
    * ```
    */
   public createViewDisk(name: string, path: string): ViewImpl {
+    if (this.hasViewDisk(name)) {
+      this.removeViewDisk(name)
+    }
+
     this.edge.mount(name, path)
 
     return this
@@ -154,9 +167,40 @@ export class ViewImpl {
    * ```
    */
   public removeViewDisk(name: string): ViewImpl {
+    if (!this.hasViewDisk(name)) {
+      return this
+    }
+
     this.edge.unmount(name)
 
     return this
+  }
+
+  /**
+   * Verify if some view disk exists.
+   *
+   * @example
+   *  View.createViewDisk('testing', Path.views('testing'))
+   *
+   *  View.hasViewDisk('testing') // true
+   *  View.hasViewDisk('testing::subTesting') // true
+   *  View.hasViewDisk('testing::subTesting/notFound') // false
+   */
+  public hasViewDisk(name: string): boolean {
+    try {
+      const path = this.edge.loader.makePath(name)
+      this.edge.loader.resolve(path)
+
+      return true
+    } catch (err) {
+      const has = this.edge.loader.mounted[name]
+
+      if (has) {
+        return true
+      }
+
+      return false
+    }
   }
 
   /**
@@ -294,7 +338,7 @@ export class ViewImpl {
   /**
    * Register all disks from "view.disks" configuration.
    */
-  private registerDisks() {
+  private registerDisks(): void {
     const disks = Config.get('view.disks')
 
     Object.keys(disks).forEach(k => this.createViewDisk(k, disks[k]))
@@ -303,7 +347,7 @@ export class ViewImpl {
   /**
    * Register all templates from "view.templates" configuration.
    */
-  private registerTemplates() {
+  private registerTemplates(): void {
     if (this.cantRegisterTemplates()) {
       return
     }
@@ -323,7 +367,7 @@ export class ViewImpl {
    * If "view.templates.useCustom" is set to false, Athenna will
    * not register custom templates.
    */
-  private registerCustomTemplates(path = Path.resources('templates')) {
+  private registerCustomTemplates(path = Path.resources('templates')): void {
     if (this.cantRegisterTemplates()) {
       return
     }
@@ -354,10 +398,17 @@ export class ViewImpl {
    * But, depending on the application that the developer is building he
    * can set "view.templates.registerInProduction" to true.
    */
-  private cantRegisterTemplates() {
+  private cantRegisterTemplates(): boolean {
     return !(
       Config.get('app.env', 'production') === 'production' &&
       !Config.get('view.templates.registerInProduction', false)
     )
+  }
+
+  /**
+   * Verify if Edge has the template name loaded or mounted.
+   */
+  private isMountedOrIsTemplate(template: string): boolean {
+    return this.hasViewDisk(template) || this.hasTemplate(template)
   }
 }
