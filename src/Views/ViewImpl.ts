@@ -389,7 +389,7 @@ export class ViewImpl {
     const templates = this.getResourcesTemplates(path)
 
     templates.forEach(t =>
-      this.createTemplate(`artisan::${t.name}`, t.getContentSync().toString()),
+      this.createTemplate(`artisan::${t.name}`, t.getContentAsStringSync()),
     )
   }
 
