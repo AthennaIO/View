@@ -9,7 +9,7 @@
 
 import { Edge } from 'edge.js'
 import { Config } from '@athenna/config'
-import { File, Folder, Is } from '@athenna/common'
+import { File, Is } from '@athenna/common'
 import { EmptyComponentException } from '#src/Exceptions/EmptyComponentException'
 import { NotFoundTemplateException } from '#src/Exceptions/NotFoundTemplateException'
 import { AlreadyExistComponentException } from '#src/Exceptions/AlreadyExistComponentException'
@@ -22,10 +22,6 @@ export class ViewImpl {
 
   public constructor() {
     this.edge = new Edge(Config.get('view.edge'))
-
-    this.registerDisks()
-    this.registerTemplates()
-    this.registerCustomTemplates()
   }
 
   /**
@@ -344,86 +340,9 @@ export class ViewImpl {
   }
 
   /**
-   * Register all disks from "view.disks" configuration.
-   */
-  private registerDisks(): void {
-    const disks = Config.get('view.disks')
-
-    Object.keys(disks).forEach(k => this.createViewDisk(k, disks[k]))
-  }
-
-  /**
-   * Register all templates from "view.templates.paths" configuration.
-   */
-  private registerTemplates(): void {
-    if (this.cantRegisterTemplates()) {
-      return
-    }
-
-    const templates = Config.get('view.templates.paths')
-
-    Object.keys(templates).forEach(k => {
-      this.createTemplateByPath(`artisan::${k}`, templates[k])
-    })
-  }
-
-  /**
-   * Register all templates inside some path. The file name
-   * will be used to make the registration. All the templates
-   * registered with this method will start with "artisan::...".
-   *
-   * If "view.templates.useCustom" is set to false, Athenna will
-   * not register custom templates.
-   */
-  private registerCustomTemplates(
-    path = Config.get('view.templates.customTemplatesPath'),
-  ): void {
-    if (this.cantRegisterTemplates()) {
-      return
-    }
-
-    if (Config.isNot('view.templates.useCustom', true)) {
-      return
-    }
-
-    const templates = this.getResourcesTemplates(path)
-
-    templates.forEach(t =>
-      this.createTemplate(`artisan::${t.name}`, t.getContentSync().toString()),
-    )
-  }
-
-  /**
-   * Verify if "view.templates.register" is not true. There are no need to
-   * register templates when running the application in production because
-   * we are not going to make files.
-   *
-   * But, depending on the application that the developer is building he
-   * can set "view.templates.register" to true. Is recommended to use the
-   * "Env('NODE_ENV', 'production')" to set this value.
-   */
-  private cantRegisterTemplates(): boolean {
-    return Config.isNot('view.templates.register', true)
-  }
-
-  /**
    * Verify if Edge has the template name loaded or mounted.
    */
   private isMountedOrIsTemplate(template: string): boolean {
     return this.hasViewDisk(template) || this.hasTemplate(template)
-  }
-
-  /**
-   * Get files by pattern if folder exists or return an
-   * empty array.
-   */
-  private getResourcesTemplates(path: string): File[] {
-    const folder = new Folder(path)
-
-    if (!folder.folderExists) {
-      return []
-    }
-
-    return folder.getFilesByPattern('**/*.edge', true)
   }
 }
