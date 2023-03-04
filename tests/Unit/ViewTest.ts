@@ -20,6 +20,7 @@ test.group('ViewTest', group => {
   group.each.setup(async () => {
     Config.clear()
     new Ioc().reconstruct()
+    await Config.load(Path.stubs('config/rc.ts'))
   })
 
   group.each.teardown(async () => {
@@ -35,22 +36,6 @@ test.group('ViewTest', group => {
     assert.isTrue(content.includes('<title>Hello World!</title>'))
     assert.isTrue(content.includes('List users: {&quot;name&quot;:&quot;Victor Tesoura&quot;}'))
     assert.isTrue(content.includes('&copy; Victor Tesoura txsoura@athenna.io'))
-  })
-
-  test('should be able to render artisan templates with components included', async ({ assert }) => {
-    await Config.load(Path.stubs('config/view.ts'))
-    new ViewProvider().register()
-
-    const content = View.renderSync('artisan::command', {
-      package: 'view',
-      author: 'Victor Tesoura',
-      email: 'txsoura@athenna.io',
-      namePascal: 'MyCommand',
-    })
-
-    assert.isTrue(content.includes('@athenna/view'))
-    assert.isTrue(content.includes('export class MyCommand {}'))
-    assert.isTrue(content.includes('(c) Victor Tesoura <txsoura@athenna.io>'))
   })
 
   test('should be able to render raw edge content', async ({ assert }) => {
@@ -195,48 +180,13 @@ test.group('ViewTest', group => {
     assert.throws(() => View.renderSync('command'), NotFoundTemplateException)
   })
 
-  test('should be able to register custom templates in "resources/templates" folder', async ({ assert }) => {
+  test('should be able to register custom template', async ({ assert }) => {
+    const templatePath = Path.resources('templates/command.edge')
     await Config.load(Path.stubs('config/view.ts'))
-    await new File(Path.resources('templates/command.edge'), Buffer.from('Hello')).load()
+    await new File(templatePath, Buffer.from('Hello')).load()
 
     new ViewProvider().register()
 
-    assert.equal(View.renderSync('artisan::command'), 'Hello')
-  })
-
-  test('should not register custom templates if folder does not exists', async ({ assert }) => {
-    await Config.load(Path.stubs('config/view.ts'))
-
-    new ViewProvider().register()
-
-    const content = View.renderSync('artisan::command', {
-      package: 'view',
-      author: 'Victor Tesoura',
-      email: 'txsoura@athenna.io',
-      namePascal: 'MyCommand',
-    })
-
-    assert.isTrue(content.includes('@athenna/view'))
-    assert.isTrue(content.includes('export class MyCommand {}'))
-    assert.isTrue(content.includes('(c) Victor Tesoura <txsoura@athenna.io>'))
-  })
-
-  test('should not use custom templates if view.templates.useCustom is false', async ({ assert }) => {
-    await Config.load(Path.stubs('config/view.ts'))
-
-    Config.set('view.templates.useCustom', false)
-
-    new ViewProvider().register()
-
-    const content = View.renderSync('artisan::command', {
-      package: 'view',
-      author: 'Victor Tesoura',
-      email: 'txsoura@athenna.io',
-      namePascal: 'MyCommand',
-    })
-
-    assert.isTrue(content.includes('@athenna/view'))
-    assert.isTrue(content.includes('export class MyCommand {}'))
-    assert.isTrue(content.includes('(c) Victor Tesoura <txsoura@athenna.io>'))
+    assert.equal(View.createTemplateByPath('command', templatePath).renderSync('command'), 'Hello')
   })
 })
