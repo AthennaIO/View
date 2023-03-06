@@ -13,7 +13,7 @@ import { ServiceProvider } from '@athenna/ioc'
 export class ViewProvider extends ServiceProvider {
   public register() {
     const view = new ViewImpl()
-    const disks = Config.get('rc.view.disks')
+    const disks = Config.get('rc.view.disks', {})
 
     Object.keys(disks).forEach(k => view.createViewDisk(k, disks[k]))
 
