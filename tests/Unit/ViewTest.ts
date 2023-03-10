@@ -8,37 +8,41 @@
  */
 
 import { Ioc } from '@athenna/ioc'
-import { test } from '@japa/runner'
-import { File, Folder, Path } from '@athenna/common'
 import { Config } from '@athenna/config'
 import { View, ViewProvider } from '#src'
+import { File, Folder, Path } from '@athenna/common'
+import { AfterEach, BeforeEach, Test, TestContext } from '@athenna/test'
 import { EmptyComponentException } from '#src/Exceptions/EmptyComponentException'
 import { NotFoundTemplateException } from '#src/Exceptions/NotFoundTemplateException'
 import { AlreadyExistComponentException } from '#src/Exceptions/AlreadyExistComponentException'
 
-test.group('ViewTest', group => {
-  group.each.setup(async () => {
+export default class ViewTest {
+  @BeforeEach()
+  public async beforeEach() {
     Config.clear()
     new Ioc().reconstruct()
     await Config.load(Path.stubs('config/rc.ts'))
-  })
+  }
 
-  group.each.teardown(async () => {
+  @AfterEach()
+  public async afterEach() {
     await Folder.safeRemove(Path.resources())
-  })
+  }
 
-  test('should be able to render html views with components included', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRenderHtmlViewsWithComponentsIncluded({ assert }: TestContext) {
     await Config.load(Path.stubs('config/view.ts'))
     new ViewProvider().register()
 
     const content = await View.render('admin::listUsers', { users: JSON.stringify({ name: 'Victor Tesoura' }) })
 
     assert.isTrue(content.includes('<title>Hello World!</title>'))
-    assert.isTrue(content.includes('List users: {&quot;name&quot;:&quot;Victor Tesoura&quot;}'))
     assert.isTrue(content.includes('&copy; Victor Tesoura txsoura@athenna.io'))
-  })
+    assert.isTrue(content.includes('List users: {&quot;name&quot;:&quot;Victor Tesoura&quot;}'))
+  }
 
-  test('should be able to render raw edge content', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRenderRawEdgeContent({ assert }: TestContext) {
     await Config.load(Path.stubs('config/view.ts'))
     new ViewProvider().register()
 
@@ -50,9 +54,10 @@ test.group('ViewTest', group => {
 
     assert.equal(result, '## Hello World!')
     assert.equal(resultSync, '## Hello World!')
-  })
+  }
 
-  test('should be able to add and remove global properties in views', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToAddAndRemoveGlobalPropertiesInViews({ assert }: TestContext) {
     await Config.load(Path.stubs('config/view.ts'))
     new ViewProvider().register()
 
@@ -61,16 +66,30 @@ test.group('ViewTest', group => {
 
     assert.equal(content, '## Node.js version: 18')
     assert.equal(contentUndefined, '## Node.js version: undefined')
-  })
+  }
 
-  test('should not throws errors when trying to remove a global property that does not exists', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToAddAndRemoveGlobalPropertiesInViews({ assert }: TestContext) {
+    await Config.load(Path.stubs('config/view.ts'))
+    new ViewProvider().register()
+
+    const content = await View.addProperty('nodeVersion', '18').renderRaw('## Node.js version: {{ nodeVersion }}')
+    const contentUndefined = await View.removeProperty('nodeVersion').renderRaw('## Node.js version: {{ nodeVersion }}')
+
+    assert.equal(content, '## Node.js version: 18')
+    assert.equal(contentUndefined, '## Node.js version: undefined')
+  }
+
+  @Test()
+  public async shouldNotThrowsErrorsWhenTryingToRemoveAGlobalPropertyThatDoesNotExists({ assert }: TestContext) {
     await Config.load(Path.stubs('config/view.ts'))
     new ViewProvider().register()
 
     assert.doesNotThrows(() => View.removeProperty('notFound'))
-  })
+  }
 
-  test('should be able to add and remove view disks', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToAddAndRemoveViewDisks({ assert }: TestContext) {
     await Config.load(Path.stubs('config/view.ts'))
     new ViewProvider().register()
 
@@ -81,17 +100,19 @@ test.group('ViewTest', group => {
     View.removeViewDisk('test')
 
     assert.isFalse(View.hasViewDisk('test'))
-  })
+  }
 
-  test('should throw an exception when trying to render views that are not registered', async ({ assert }) => {
+  @Test()
+  public async shouldThrowAnExceptionWhenTryingToRenderViewsThatAreNotRegistered({ assert }: TestContext) {
     await Config.load(Path.stubs('config/view.ts'))
     new ViewProvider().register()
 
     assert.throws(() => View.renderSync('notFound'), NotFoundTemplateException)
     await assert.rejects(() => View.render('notFound'), NotFoundTemplateException)
-  })
+  }
 
-  test('should be able to update already mounted view disks', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToUpdateAlreadyMountedViewDisks({ assert }: TestContext) {
     await Config.load(Path.stubs('config/view.ts'))
     new ViewProvider().register()
 
@@ -102,16 +123,32 @@ test.group('ViewTest', group => {
     assert.isFalse(View.hasViewDisk('admin::listUsers'))
     assert.isTrue(View.hasViewDisk('admin::header'))
     assert.isTrue(View.hasViewDisk('admin::footer'))
-  })
+  }
 
-  test('should not throw any errors when trying to remove a disk that does not exist', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToUpdateAlreadyMountedViewDisks({ assert }: TestContext) {
+    await Config.load(Path.stubs('config/view.ts'))
+    new ViewProvider().register()
+
+    assert.isTrue(View.hasViewDisk('admin::listUsers'))
+
+    View.createViewDisk('admin', Path.stubs('views/components'))
+
+    assert.isFalse(View.hasViewDisk('admin::listUsers'))
+    assert.isTrue(View.hasViewDisk('admin::header'))
+    assert.isTrue(View.hasViewDisk('admin::footer'))
+  }
+
+  @Test()
+  public async shouldNotThrowsAnyErrorsWhenTryingToRemoveAViewDiskThatDoesNotExists({ assert }: TestContext) {
     await Config.load(Path.stubs('config/view.ts'))
     new ViewProvider().register()
 
     assert.doesNotThrows(() => View.removeViewDisk('notFound'))
-  })
+  }
 
-  test('should be able to create and remove components', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToCreateAndRemoveComponents({ assert }: TestContext) {
     await Config.load(Path.stubs('config/view.ts'))
     new ViewProvider().register()
 
@@ -122,18 +159,18 @@ test.group('ViewTest', group => {
     View.removeComponent('hello')
 
     assert.isFalse(View.hasComponent('hello'))
-  })
+  }
 
-  test('should throw an exception when trying to create a undefined component', async ({ assert }) => {
+  @Test()
+  public async shouldThrowAnExceptionWhenTryingToCreateAUndefinedComponent({ assert }: TestContext) {
     await Config.load(Path.stubs('config/view.ts'))
     new ViewProvider().register()
 
     assert.throws(() => View.createComponent('testing', undefined), EmptyComponentException)
-  })
+  }
 
-  test('should throw an exception when trying to create a component with a name that already exists', async ({
-    assert,
-  }) => {
+  @Test()
+  public async shouldThrowAnExceptionWhenTryingToCreateAComponentWithANameThatAlreadyExists({ assert }: TestContext) {
     await Config.load(Path.stubs('config/view.ts'))
     new ViewProvider().register()
 
@@ -141,9 +178,10 @@ test.group('ViewTest', group => {
       () => View.createComponent('testing', '').createComponent('testing', ''),
       AlreadyExistComponentException,
     )
-  })
+  }
 
-  test('should be able to automatically remove the template if name is already is use', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToAutomaticallyRemoveTheComponentIfNameIsAlreadyIsUse({ assert }: TestContext) {
     await Config.load(Path.stubs('config/view.ts'))
     new ViewProvider().register()
 
@@ -154,33 +192,36 @@ test.group('ViewTest', group => {
     View.createTemplate('hello', 'Hello')
 
     assert.isTrue(View.hasTemplate('hello'))
-  })
+  }
 
-  test('should not throw errors if trying to create a template by path that does not exists', async ({ assert }) => {
+  @Test()
+  public async shouldNotThrowErrorsIfTryingToRemoveAComponentThatDoesNotExists({ assert }: TestContext) {
     await Config.load(Path.stubs('config/view.ts'))
     new ViewProvider().register()
 
-    assert.doesNotThrows(() => View.createTemplateByPath('notFound', 'notFound.edge'))
-  })
+    assert.doesNotThrows(() => View.removeComponent('notFound'))
+  }
 
-  test('should not throw errors if trying to remove a template that does not exist', async ({ assert }) => {
+  @Test()
+  public async shouldNotThrowErrorsIfTryingToRemoveATemplateThatDoesNotExists({ assert }: TestContext) {
     await Config.load(Path.stubs('config/view.ts'))
     new ViewProvider().register()
 
     assert.doesNotThrows(() => View.removeTemplate('notFound'))
-  })
+  }
 
-  test('should not register template if view.templates.register is false', async ({ assert }) => {
+  @Test()
+  public async shouldNotRegisterTemplateIfViewTemplatesRegisterIsFalse({ assert }: TestContext) {
     await Config.load(Path.stubs('config/view.ts'))
-
     Config.set('view.templates.register', false)
 
     new ViewProvider().register()
 
     assert.throws(() => View.renderSync('command'), NotFoundTemplateException)
-  })
+  }
 
-  test('should be able to register custom template', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterCustomTemplate({ assert }: TestContext) {
     const templatePath = Path.resources('templates/command.edge')
     await Config.load(Path.stubs('config/view.ts'))
     await new File(templatePath, Buffer.from('Hello')).load()
@@ -188,5 +229,5 @@ test.group('ViewTest', group => {
     new ViewProvider().register()
 
     assert.equal(View.createTemplateByPath('command', templatePath).renderSync('command'), 'Hello')
-  })
-})
+  }
+}
