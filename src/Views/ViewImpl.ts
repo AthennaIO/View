@@ -10,6 +10,7 @@
 import { Edge } from 'edge.js'
 import { Config } from '@athenna/config'
 import { File, Is } from '@athenna/common'
+import { resolve, isAbsolute } from 'node:path'
 import { EmptyComponentException } from '#src/Exceptions/EmptyComponentException'
 import { NotFoundTemplateException } from '#src/Exceptions/NotFoundTemplateException'
 import { AlreadyExistComponentException } from '#src/Exceptions/AlreadyExistComponentException'
@@ -145,6 +146,10 @@ export class ViewImpl {
   public createViewDisk(name: string, path: string): ViewImpl {
     if (this.hasViewDisk(name)) {
       this.removeViewDisk(name)
+    }
+
+    if (!isAbsolute(path)) {
+      path = resolve(Path.pwd(), path)
     }
 
     this.edge.mount(name, path)
