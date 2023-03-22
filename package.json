@@ -31,7 +31,8 @@
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
   "exports": {
-    ".": "./src/index.js"
+    ".": "./src/index.js",
+    "./providers/ViewProvider": "./src/Providers/ViewProvider.js"
   },
   "imports": {
     "#bin/*": "./bin/*.js",
