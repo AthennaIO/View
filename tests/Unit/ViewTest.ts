@@ -21,7 +21,7 @@ export default class ViewTest {
   public async beforeEach() {
     Config.clear()
     new Ioc().reconstruct()
-    await Config.load(Path.stubs('config/rc.ts'))
+    await Config.loadAll(Path.stubs('config'))
   }
 
   @AfterEach()
