@@ -22,7 +22,7 @@ export class ViewImpl {
   public edge: Edge
 
   public constructor() {
-    this.edge = new Edge(Config.get('rc.view.edge', {}))
+    this.edge = new Edge(Config.get('view.edge', {}))
   }
 
   /**
