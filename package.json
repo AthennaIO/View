@@ -43,7 +43,7 @@
     "#tests": "./tests/index.js"
   },
   "dependencies": {
-    "edge.js": "^5.5.0"
+    "edge.js": "^5.5.1"
   },
   "devDependencies": {
     "@athenna/common": "^3.6.0",
