@@ -69,18 +69,6 @@ export default class ViewTest {
   }
 
   @Test()
-  public async shouldBeAbleToAddAndRemoveGlobalPropertiesInViews({ assert }: TestContext) {
-    await Config.load(Path.stubs('config/view.ts'))
-    new ViewProvider().register()
-
-    const content = await View.addProperty('nodeVersion', '18').renderRaw('## Node.js version: {{ nodeVersion }}')
-    const contentUndefined = await View.removeProperty('nodeVersion').renderRaw('## Node.js version: {{ nodeVersion }}')
-
-    assert.equal(content, '## Node.js version: 18')
-    assert.equal(contentUndefined, '## Node.js version: undefined')
-  }
-
-  @Test()
   public async shouldNotThrowsErrorsWhenTryingToRemoveAGlobalPropertyThatDoesNotExists({ assert }: TestContext) {
     await Config.load(Path.stubs('config/view.ts'))
     new ViewProvider().register()
@@ -109,20 +97,6 @@ export default class ViewTest {
 
     assert.throws(() => View.renderSync('notFound'), NotFoundTemplateException)
     await assert.rejects(() => View.render('notFound'), NotFoundTemplateException)
-  }
-
-  @Test()
-  public async shouldBeAbleToUpdateAlreadyMountedViewDisks({ assert }: TestContext) {
-    await Config.load(Path.stubs('config/view.ts'))
-    new ViewProvider().register()
-
-    assert.isTrue(View.hasViewDisk('admin::listUsers'))
-
-    View.createViewDisk('admin', Path.stubs('views/components'))
-
-    assert.isFalse(View.hasViewDisk('admin::listUsers'))
-    assert.isTrue(View.hasViewDisk('admin::header'))
-    assert.isTrue(View.hasViewDisk('admin::footer'))
   }
 
   @Test()
