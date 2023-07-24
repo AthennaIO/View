@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { ViewImpl } from '#src/Views/ViewImpl'
+import { ViewImpl } from '#src/views/ViewImpl'
 import { ServiceProvider } from '@athenna/ioc'
 
 export class ViewProvider extends ServiceProvider {

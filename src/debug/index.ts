@@ -7,6 +7,6 @@
  * file that was distributed with this source code.
  */
 
-export * from '#src/facades/View'
-export * from '#src/views/ViewImpl'
-export * from '#src/providers/ViewProvider'
+import { debuglog } from 'node:util'
+
+export const debug = debuglog('athenna:view')
