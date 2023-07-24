@@ -9,11 +9,12 @@
 
 import { Edge } from 'edge.js'
 import { Config } from '@athenna/config'
+import { debug } from '#src/debug/index'
 import { File, Is } from '@athenna/common'
 import { resolve, isAbsolute } from 'node:path'
-import { EmptyComponentException } from '#src/Exceptions/EmptyComponentException'
-import { NotFoundTemplateException } from '#src/Exceptions/NotFoundTemplateException'
-import { AlreadyExistComponentException } from '#src/Exceptions/AlreadyExistComponentException'
+import { EmptyComponentException } from '#src/exceptions/EmptyComponentException'
+import { NotFoundTemplateException } from '#src/exceptions/NotFoundTemplateException'
+import { AlreadyExistComponentException } from '#src/exceptions/AlreadyExistComponentException'
 
 export class ViewImpl {
   /**
@@ -58,7 +59,7 @@ export class ViewImpl {
   }
 
   /**
-   * Render some raw edge content with optional data included.
+   * Render some raw-edge content with optional data included.
    *
    * @example
    * ```ts
@@ -70,7 +71,7 @@ export class ViewImpl {
   }
 
   /**
-   * Render some raw edge content asynchronously with optional
+   * Render some raw-edge content asynchronously with optional
    * data included.
    *
    * @example
@@ -145,10 +146,21 @@ export class ViewImpl {
    */
   public createViewDisk(name: string, path: string): ViewImpl {
     if (this.hasViewDisk(name)) {
+      debug('View disk %s already exists and will be removed first.', name)
+
       this.removeViewDisk(name)
     }
 
+    debug('Creating view disk %s for path %s.', name, path)
+
     if (!isAbsolute(path)) {
+      debug(
+        'Path %s for view disk %s is not absolute and is going to be resolved using cwd %s.',
+        path,
+        name,
+        Path.pwd(),
+      )
+
       path = resolve(Path.pwd(), path)
     }
 
@@ -170,8 +182,12 @@ export class ViewImpl {
    */
   public removeViewDisk(name: string): ViewImpl {
     if (!this.hasViewDisk(name)) {
+      debug('View disk %s does not exist, skipping removing operation.', name)
+
       return this
     }
+
+    debug('Removing view disk %s.', name)
 
     this.edge.unmount(name)
 
@@ -197,16 +213,12 @@ export class ViewImpl {
     } catch (err) {
       const has = this.edge.loader.mounted[name]
 
-      if (has) {
-        return true
-      }
-
-      return false
+      return !!has
     }
   }
 
   /**
-   * Create a in-memory component.
+   * Create an in-memory component.
    *
    * @example
    * ```ts
@@ -231,6 +243,8 @@ export class ViewImpl {
     if (this.hasComponent(name)) {
       throw new AlreadyExistComponentException(name)
     }
+
+    debug('Registering component %s.', name)
 
     this.edge.registerTemplate(name, { template: component })
 
@@ -259,6 +273,8 @@ export class ViewImpl {
    *    .removeComponent('testing')
    */
   public removeComponent(name: string): ViewImpl {
+    debug('Removing component %s.', name)
+
     this.edge.removeTemplate(name)
 
     return this
@@ -287,8 +303,12 @@ export class ViewImpl {
    */
   public createTemplate(name: string, template: string): ViewImpl {
     if (this.hasTemplate(name)) {
+      debug('Template %s already exists and will be removed first.', name)
+
       this.removeTemplate(name)
     }
+
+    debug('Creating template %s.', name)
 
     return this.createComponent(name, template)
   }
@@ -338,8 +358,15 @@ export class ViewImpl {
    */
   public removeTemplate(name: string): ViewImpl {
     if (!this.hasTemplate(name)) {
+      debug(
+        'Template %s does not exist and removing operation will be skipped.',
+        name,
+      )
+
       return this
     }
+
+    debug('Removing template %s.', name)
 
     return this.removeComponent(name)
   }

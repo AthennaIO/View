@@ -8,6 +8,6 @@
  */
 
 import { Facade } from '@athenna/ioc'
-import { ViewImpl } from '#src/Views/ViewImpl'
+import { ViewImpl } from '#src/views/ViewImpl'
 
 export const View = Facade.createFor<ViewImpl>('Athenna/Core/View')

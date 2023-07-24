@@ -10,11 +10,12 @@
 import { Ioc } from '@athenna/ioc'
 import { Config } from '@athenna/config'
 import { View, ViewProvider } from '#src'
+import type { Context } from '@athenna/test/types'
 import { File, Folder, Path } from '@athenna/common'
-import { AfterEach, BeforeEach, Test, TestContext } from '@athenna/test'
-import { EmptyComponentException } from '#src/Exceptions/EmptyComponentException'
-import { NotFoundTemplateException } from '#src/Exceptions/NotFoundTemplateException'
-import { AlreadyExistComponentException } from '#src/Exceptions/AlreadyExistComponentException'
+import { AfterEach, BeforeEach, Test } from '@athenna/test'
+import { EmptyComponentException } from '#src/exceptions/EmptyComponentException'
+import { NotFoundTemplateException } from '#src/exceptions/NotFoundTemplateException'
+import { AlreadyExistComponentException } from '#src/exceptions/AlreadyExistComponentException'
 
 export default class ViewTest {
   @BeforeEach()
@@ -30,7 +31,7 @@ export default class ViewTest {
   }
 
   @Test()
-  public async shouldBeAbleToRenderHtmlViewsWithComponentsIncluded({ assert }: TestContext) {
+  public async shouldBeAbleToRenderHtmlViewsWithComponentsIncluded({ assert }: Context) {
     await Config.load(Path.stubs('config/view.ts'))
     new ViewProvider().register()
 
@@ -42,7 +43,7 @@ export default class ViewTest {
   }
 
   @Test()
-  public async shouldBeAbleToRenderRawEdgeContent({ assert }: TestContext) {
+  public async shouldBeAbleToRenderRawEdgeContent({ assert }: Context) {
     await Config.load(Path.stubs('config/view.ts'))
     new ViewProvider().register()
 
@@ -57,7 +58,7 @@ export default class ViewTest {
   }
 
   @Test()
-  public async shouldBeAbleToAddAndRemoveGlobalPropertiesInViews({ assert }: TestContext) {
+  public async shouldBeAbleToAddAndRemoveGlobalPropertiesInViews({ assert }: Context) {
     await Config.load(Path.stubs('config/view.ts'))
     new ViewProvider().register()
 
@@ -69,7 +70,7 @@ export default class ViewTest {
   }
 
   @Test()
-  public async shouldNotThrowsErrorsWhenTryingToRemoveAGlobalPropertyThatDoesNotExists({ assert }: TestContext) {
+  public async shouldNotThrowsErrorsWhenTryingToRemoveAGlobalPropertyThatDoesNotExists({ assert }: Context) {
     await Config.load(Path.stubs('config/view.ts'))
     new ViewProvider().register()
 
@@ -77,7 +78,7 @@ export default class ViewTest {
   }
 
   @Test()
-  public async shouldBeAbleToAddAndRemoveViewDisks({ assert }: TestContext) {
+  public async shouldBeAbleToAddAndRemoveViewDisks({ assert }: Context) {
     await Config.load(Path.stubs('config/view.ts'))
     new ViewProvider().register()
 
@@ -91,7 +92,7 @@ export default class ViewTest {
   }
 
   @Test()
-  public async shouldThrowAnExceptionWhenTryingToRenderViewsThatAreNotRegistered({ assert }: TestContext) {
+  public async shouldThrowAnExceptionWhenTryingToRenderViewsThatAreNotRegistered({ assert }: Context) {
     await Config.load(Path.stubs('config/view.ts'))
     new ViewProvider().register()
 
@@ -100,7 +101,7 @@ export default class ViewTest {
   }
 
   @Test()
-  public async shouldBeAbleToUpdateAlreadyMountedViewDisks({ assert }: TestContext) {
+  public async shouldBeAbleToUpdateAlreadyMountedViewDisks({ assert }: Context) {
     await Config.load(Path.stubs('config/view.ts'))
     new ViewProvider().register()
 
@@ -114,7 +115,7 @@ export default class ViewTest {
   }
 
   @Test()
-  public async shouldNotThrowsAnyErrorsWhenTryingToRemoveAViewDiskThatDoesNotExists({ assert }: TestContext) {
+  public async shouldNotThrowsAnyErrorsWhenTryingToRemoveAViewDiskThatDoesNotExists({ assert }: Context) {
     await Config.load(Path.stubs('config/view.ts'))
     new ViewProvider().register()
 
@@ -122,7 +123,7 @@ export default class ViewTest {
   }
 
   @Test()
-  public async shouldBeAbleToCreateAndRemoveComponents({ assert }: TestContext) {
+  public async shouldBeAbleToCreateAndRemoveComponents({ assert }: Context) {
     await Config.load(Path.stubs('config/view.ts'))
     new ViewProvider().register()
 
@@ -136,7 +137,7 @@ export default class ViewTest {
   }
 
   @Test()
-  public async shouldThrowAnExceptionWhenTryingToCreateAUndefinedComponent({ assert }: TestContext) {
+  public async shouldThrowAnExceptionWhenTryingToCreateAUndefinedComponent({ assert }: Context) {
     await Config.load(Path.stubs('config/view.ts'))
     new ViewProvider().register()
 
@@ -144,7 +145,7 @@ export default class ViewTest {
   }
 
   @Test()
-  public async shouldThrowAnExceptionWhenTryingToCreateAComponentWithANameThatAlreadyExists({ assert }: TestContext) {
+  public async shouldThrowAnExceptionWhenTryingToCreateAComponentWithANameThatAlreadyExists({ assert }: Context) {
     await Config.load(Path.stubs('config/view.ts'))
     new ViewProvider().register()
 
@@ -155,7 +156,7 @@ export default class ViewTest {
   }
 
   @Test()
-  public async shouldBeAbleToAutomaticallyRemoveTheComponentIfNameIsAlreadyIsUse({ assert }: TestContext) {
+  public async shouldBeAbleToAutomaticallyRemoveTheComponentIfNameIsAlreadyIsUse({ assert }: Context) {
     await Config.load(Path.stubs('config/view.ts'))
     new ViewProvider().register()
 
@@ -169,7 +170,7 @@ export default class ViewTest {
   }
 
   @Test()
-  public async shouldNotThrowErrorsIfTryingToRemoveAComponentThatDoesNotExists({ assert }: TestContext) {
+  public async shouldNotThrowErrorsIfTryingToRemoveAComponentThatDoesNotExists({ assert }: Context) {
     await Config.load(Path.stubs('config/view.ts'))
     new ViewProvider().register()
 
@@ -177,7 +178,7 @@ export default class ViewTest {
   }
 
   @Test()
-  public async shouldNotThrowErrorsIfTryingToRemoveATemplateThatDoesNotExists({ assert }: TestContext) {
+  public async shouldNotThrowErrorsIfTryingToRemoveATemplateThatDoesNotExists({ assert }: Context) {
     await Config.load(Path.stubs('config/view.ts'))
     new ViewProvider().register()
 
@@ -185,7 +186,7 @@ export default class ViewTest {
   }
 
   @Test()
-  public async shouldNotRegisterTemplateIfViewTemplatesRegisterIsFalse({ assert }: TestContext) {
+  public async shouldNotRegisterTemplateIfViewTemplatesRegisterIsFalse({ assert }: Context) {
     await Config.load(Path.stubs('config/view.ts'))
     Config.set('view.templates.register', false)
 
@@ -195,7 +196,7 @@ export default class ViewTest {
   }
 
   @Test()
-  public async shouldBeAbleToRegisterCustomTemplate({ assert }: TestContext) {
+  public async shouldBeAbleToRegisterCustomTemplate({ assert }: Context) {
     const templatePath = Path.resources('templates/command.edge')
     await Config.load(Path.stubs('config/view.ts'))
     await new File(templatePath, Buffer.from('Hello')).load()
