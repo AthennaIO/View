@@ -26,7 +26,8 @@
     "src/*.d.ts",
     "src/**/*.js",
     "src/**/*.d.ts",
-    "templates"
+    "templates",
+    "configurer"
   ],
   "type": "module",
   "main": "./src/index.js",
