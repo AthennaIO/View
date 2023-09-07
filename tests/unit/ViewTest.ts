@@ -21,7 +21,7 @@ export default class ViewTest {
   public async beforeEach() {
     Config.clear()
     new Ioc().reconstruct()
-    await Config.loadAll(Path.stubs('config'))
+    await Config.loadAll(Path.fixtures('config'))
   }
 
   @AfterEach()
@@ -31,7 +31,7 @@ export default class ViewTest {
 
   @Test()
   public async shouldBeAbleToRenderHtmlViewsWithComponentsIncluded({ assert }: Context) {
-    await Config.load(Path.stubs('config/view.ts'))
+    await Config.load(Path.fixtures('config/view.ts'))
     new ViewProvider().register()
 
     const content = await View.render('admin::listUsers', { users: JSON.stringify({ name: 'Victor Tesoura' }) })
@@ -43,7 +43,7 @@ export default class ViewTest {
 
   @Test()
   public async shouldBeAbleToRenderRawEdgeContent({ assert }: Context) {
-    await Config.load(Path.stubs('config/view.ts'))
+    await Config.load(Path.fixtures('config/view.ts'))
     new ViewProvider().register()
 
     const content = '## Hello {{ value }}'
@@ -58,7 +58,7 @@ export default class ViewTest {
 
   @Test()
   public async shouldBeAbleToAddAndRemoveGlobalPropertiesInViews({ assert }: Context) {
-    await Config.load(Path.stubs('config/view.ts'))
+    await Config.load(Path.fixtures('config/view.ts'))
     new ViewProvider().register()
 
     const content = await View.addProperty('nodeVersion', '18').renderRaw('## Node.js version: {{ nodeVersion }}')
@@ -70,7 +70,7 @@ export default class ViewTest {
 
   @Test()
   public async shouldNotThrowsErrorsWhenTryingToRemoveAGlobalPropertyThatDoesNotExists({ assert }: Context) {
-    await Config.load(Path.stubs('config/view.ts'))
+    await Config.load(Path.fixtures('config/view.ts'))
     new ViewProvider().register()
 
     assert.doesNotThrows(() => View.removeProperty('notFound'))
@@ -78,10 +78,10 @@ export default class ViewTest {
 
   @Test()
   public async shouldBeAbleToAddAndRemoveViewDisks({ assert }: Context) {
-    await Config.load(Path.stubs('config/view.ts'))
+    await Config.load(Path.fixtures('config/view.ts'))
     new ViewProvider().register()
 
-    View.createViewDisk('test', Path.stubs('views'))
+    View.createViewDisk('test', Path.fixtures('views'))
 
     assert.isTrue(View.hasViewDisk('test'))
 
@@ -92,7 +92,7 @@ export default class ViewTest {
 
   @Test()
   public async shouldThrowAnExceptionWhenTryingToRenderViewsThatAreNotRegistered({ assert }: Context) {
-    await Config.load(Path.stubs('config/view.ts'))
+    await Config.load(Path.fixtures('config/view.ts'))
     new ViewProvider().register()
 
     assert.throws(() => View.renderSync('notFound'), NotFoundTemplateException)
@@ -101,12 +101,12 @@ export default class ViewTest {
 
   @Test()
   public async shouldBeAbleToUpdateAlreadyMountedViewDisks({ assert }: Context) {
-    await Config.load(Path.stubs('config/view.ts'))
+    await Config.load(Path.fixtures('config/view.ts'))
     new ViewProvider().register()
 
     assert.isTrue(View.hasViewDisk('admin::listUsers'))
 
-    View.createViewDisk('admin', Path.stubs('views/components'))
+    View.createViewDisk('admin', Path.fixtures('views/components'))
 
     assert.isFalse(View.hasViewDisk('admin::listUsers'))
     assert.isTrue(View.hasViewDisk('admin::header'))
@@ -115,7 +115,7 @@ export default class ViewTest {
 
   @Test()
   public async shouldNotThrowsAnyErrorsWhenTryingToRemoveAViewDiskThatDoesNotExists({ assert }: Context) {
-    await Config.load(Path.stubs('config/view.ts'))
+    await Config.load(Path.fixtures('config/view.ts'))
     new ViewProvider().register()
 
     assert.doesNotThrows(() => View.removeViewDisk('notFound'))
@@ -123,7 +123,7 @@ export default class ViewTest {
 
   @Test()
   public async shouldBeAbleToCreateAndRemoveComponents({ assert }: Context) {
-    await Config.load(Path.stubs('config/view.ts'))
+    await Config.load(Path.fixtures('config/view.ts'))
     new ViewProvider().register()
 
     View.createComponent('hello', 'Hello')
@@ -137,7 +137,7 @@ export default class ViewTest {
 
   @Test()
   public async shouldThrowAnExceptionWhenTryingToCreateAUndefinedComponent({ assert }: Context) {
-    await Config.load(Path.stubs('config/view.ts'))
+    await Config.load(Path.fixtures('config/view.ts'))
     new ViewProvider().register()
 
     assert.throws(() => View.createComponent('testing', undefined), EmptyComponentException)
@@ -145,18 +145,18 @@ export default class ViewTest {
 
   @Test()
   public async shouldThrowAnExceptionWhenTryingToCreateAComponentWithANameThatAlreadyExists({ assert }: Context) {
-    await Config.load(Path.stubs('config/view.ts'))
+    await Config.load(Path.fixtures('config/view.ts'))
     new ViewProvider().register()
 
     assert.throws(
       () => View.createComponent('testing', '').createComponent('testing', ''),
-      AlreadyExistComponentException,
+      AlreadyExistComponentException
     )
   }
 
   @Test()
   public async shouldBeAbleToAutomaticallyRemoveTheComponentIfNameIsAlreadyIsUse({ assert }: Context) {
-    await Config.load(Path.stubs('config/view.ts'))
+    await Config.load(Path.fixtures('config/view.ts'))
     new ViewProvider().register()
 
     View.createTemplate('hello', 'Hello')
@@ -170,7 +170,7 @@ export default class ViewTest {
 
   @Test()
   public async shouldNotThrowErrorsIfTryingToRemoveAComponentThatDoesNotExists({ assert }: Context) {
-    await Config.load(Path.stubs('config/view.ts'))
+    await Config.load(Path.fixtures('config/view.ts'))
     new ViewProvider().register()
 
     assert.doesNotThrows(() => View.removeComponent('notFound'))
@@ -178,7 +178,7 @@ export default class ViewTest {
 
   @Test()
   public async shouldNotThrowErrorsIfTryingToRemoveATemplateThatDoesNotExists({ assert }: Context) {
-    await Config.load(Path.stubs('config/view.ts'))
+    await Config.load(Path.fixtures('config/view.ts'))
     new ViewProvider().register()
 
     assert.doesNotThrows(() => View.removeTemplate('notFound'))
@@ -186,7 +186,7 @@ export default class ViewTest {
 
   @Test()
   public async shouldNotRegisterTemplateIfViewTemplatesRegisterIsFalse({ assert }: Context) {
-    await Config.load(Path.stubs('config/view.ts'))
+    await Config.load(Path.fixtures('config/view.ts'))
     Config.set('view.templates.register', false)
 
     new ViewProvider().register()
@@ -197,7 +197,7 @@ export default class ViewTest {
   @Test()
   public async shouldBeAbleToRegisterCustomTemplate({ assert }: Context) {
     const templatePath = Path.resources('templates/command.edge')
-    await Config.load(Path.stubs('config/view.ts'))
+    await Config.load(Path.fixtures('config/view.ts'))
     await new File(templatePath, Buffer.from('Hello')).load()
 
     new ViewProvider().register()

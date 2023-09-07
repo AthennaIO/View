@@ -158,7 +158,7 @@ export class ViewImpl {
         'Path %s for view disk %s is not absolute and is going to be resolved using cwd %s.',
         path,
         name,
-        Path.pwd(),
+        Path.pwd()
       )
 
       path = resolve(Path.pwd(), path)
@@ -360,7 +360,7 @@ export class ViewImpl {
     if (!this.hasTemplate(name)) {
       debug(
         'Template %s does not exist and removing operation will be skipped.',
-        name,
+        name
       )
 
       return this
