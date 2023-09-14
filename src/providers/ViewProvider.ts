@@ -17,6 +17,6 @@ export class ViewProvider extends ServiceProvider {
 
     Object.keys(disks).forEach(k => view.createViewDisk(k, disks[k]))
 
-    this.container.instance('Athenna/Core/View', view, false)
+    this.container.instance('Athenna/Core/View', view)
   }
 }
