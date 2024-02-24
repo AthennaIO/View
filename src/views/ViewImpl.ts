@@ -8,8 +8,8 @@
  */
 
 import { Edge } from 'edge.js'
+import { debug } from '#src/debug'
 import { Config } from '@athenna/config'
-import { debug } from '#src/debug/index'
 import { File, Is } from '@athenna/common'
 import { resolve, isAbsolute } from 'node:path'
 import { EmptyComponentException } from '#src/exceptions/EmptyComponentException'
@@ -114,11 +114,11 @@ export class ViewImpl {
    * ```
    */
   public removeProperty(key: string): ViewImpl {
-    if (!this.edge.GLOBALS[key]) {
+    if (!this.edge.globals[key]) {
       return this
     }
 
-    delete this.edge.GLOBALS[key]
+    delete this.edge.globals[key]
 
     return this
   }
