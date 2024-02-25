@@ -20,7 +20,7 @@ export class ViewProvider extends ServiceProvider {
       view.createViewDisk(Config.get('view.disk'))
     }
 
-    const disks = Config.get('view.namedDisks')
+    const disks = Config.get('view.namedDisks', {})
 
     Object.keys(disks).forEach(k => view.createViewDisk(k, disks[k]))
 
