@@ -1,7 +1,7 @@
 {
   "name": "@athenna/view",
-  "version": "4.14.0",
-  "description": "The Athenna template engine. Built on top of Edge.",
+  "version": "4.15.0",
+  "description": "The Athenna template engine. Built on top of Edge.js.",
   "license": "MIT",
   "author": "João Lenon <lenon@athenna.io>",
   "bugs": "https://github.com/AthennaIO/View/issues",
@@ -13,6 +13,8 @@
     "edge",
     "html",
     "text",
+    "edgejs",
+    "edge.js",
     "markdown",
     "athenna",
     "template",

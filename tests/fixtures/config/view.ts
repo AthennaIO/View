@@ -1,9 +1,24 @@
+/**
+ * @athenna/view
+ *
+ * (c) João Lenon <lenon@athenna.io>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 import { Path } from '@athenna/common'
 
 export default {
   disks: {
-    admin: Path.fixtures('views/admin'),
-    component: Path.fixtures('views/components')
+    admin: Path.fixtures('views/admin')
+  },
+
+  components: {
+    button: Path.fixtures('views/components/button.edge'),
+    copyright: Path.fixtures('views/components/copyright.edge'),
+    footer: Path.fixtures('views/components/footer.edge'),
+    header: Path.fixtures('views/components/header.edge')
   },
 
   edge: {

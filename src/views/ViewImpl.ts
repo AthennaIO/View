@@ -13,7 +13,7 @@ import { Config } from '@athenna/config'
 import { File, Is } from '@athenna/common'
 import { resolve, isAbsolute } from 'node:path'
 import { EmptyComponentException } from '#src/exceptions/EmptyComponentException'
-import { NotFoundTemplateException } from '#src/exceptions/NotFoundTemplateException'
+import { NotFoundComponentException } from '#src/exceptions/NotFoundComponentException'
 import { AlreadyExistComponentException } from '#src/exceptions/AlreadyExistComponentException'
 
 export class ViewImpl {
@@ -36,7 +36,7 @@ export class ViewImpl {
    */
   public async render(template: string, data?: any): Promise<string> {
     if (!this.isMountedOrIsTemplate(template)) {
-      throw new NotFoundTemplateException(template)
+      throw new NotFoundComponentException(template)
     }
 
     return this.edge.render(template, data)
@@ -52,7 +52,7 @@ export class ViewImpl {
    */
   public renderSync(template: string, data?: any): string {
     if (!this.isMountedOrIsTemplate(template)) {
-      throw new NotFoundTemplateException(template)
+      throw new NotFoundComponentException(template)
     }
 
     return this.edge.renderSync(template, data)
@@ -80,6 +80,35 @@ export class ViewImpl {
    * ```
    */
   public renderRawSync(content: string, data?: any): string {
+    return this.edge.renderRawSync(content, data)
+  }
+
+  /**
+   * Render some raw-edge file content with optional data included.
+   *
+   * @example
+   * ```ts
+   * View.renderRawByPath(Path.views('hello.edge'), { value: 'World!' })
+   * ```
+   */
+  public async renderRawByPath(path: string, data?: any): Promise<string> {
+    return new File(path)
+      .getContentAsString()
+      .then(content => this.edge.renderRaw(content, data))
+  }
+
+  /**
+   * Render some raw-edge file content asynchronously with optional
+   * data included.
+   *
+   * @example
+   * ```ts
+   * View.renderRawByPathSync(Path.views('hello.edge'), { value: 'World!' })
+   * ```
+   */
+  public renderRawByPathSync(path: string, data?: any): string {
+    const content = new File(path).getContentAsStringSync()
+
     return this.edge.renderRawSync(content, data)
   }
 
@@ -252,6 +281,23 @@ export class ViewImpl {
   }
 
   /**
+   * Same as "createComponent" method but create the template by the path
+   * instead. If the file path does not exist, an error will throw.
+   *
+   * @example
+   * ```ts
+   * const path = Path.resources('views/myTemplate.edge')
+   *
+   * View.createComponentByPath('myTemplate', path)
+   * ```
+   */
+  public createComponentByPath(name: string, componentPath: string): ViewImpl {
+    const file = new File(componentPath)
+
+    return this.createTemplate(name, file.getContentAsStringSync())
+  }
+
+  /**
    * Verify if some component exists.
    *
    * @example
@@ -332,7 +378,7 @@ export class ViewImpl {
       return this
     }
 
-    return this.createTemplate(name, file.getContentSync().toString())
+    return this.createTemplate(name, file.getContentAsStringSync())
   }
 
   /**

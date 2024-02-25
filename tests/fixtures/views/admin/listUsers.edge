@@ -1,7 +1,15 @@
-@!include('component::header')
+<!DOCTYPE html>
+<html>
+  @!component('header')
   <body>
-    <div>
-      List users: {{ users }}
-    </div>
+    <h1>Users:</h1>
+    @each(user in users)
+      <div>
+        <li>{{ user.id }}</li>
+        <li>{{ user.name }}</li>
+        <li>{{ user.email }}</li>
+      </div>
+    @end
   </body>
-@!include('component::footer')
+  @!component('footer')
+</html>
