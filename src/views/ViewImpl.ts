@@ -310,8 +310,18 @@ export class ViewImpl {
    * View.createComponentByPath('myTemplate', path)
    * ```
    */
-  public createComponentByPath(name: string, componentPath: string): ViewImpl {
-    const file = new File(componentPath)
+  public createComponentByPath(name: string, path: string): ViewImpl {
+    if (!isAbsolute(path)) {
+      debug(
+        'Path %s for view disk is not absolute and is going to be resolved using cwd %s.',
+        path,
+        Path.pwd()
+      )
+
+      path = resolve(Path.pwd(), path)
+    }
+
+    const file = new File(path)
 
     return this.createTemplate(name, file.getContentAsStringSync())
   }
@@ -390,8 +400,18 @@ export class ViewImpl {
    * View.createTemplateByPath('myTemplate', path)
    * ```
    */
-  public createTemplateByPath(name: string, templatePath: string): ViewImpl {
-    const file = new File(templatePath, Buffer.from(''))
+  public createTemplateByPath(name: string, path: string): ViewImpl {
+    if (!isAbsolute(path)) {
+      debug(
+        'Path %s for view disk is not absolute and is going to be resolved using cwd %s.',
+        path,
+        Path.pwd()
+      )
+
+      path = resolve(Path.pwd(), path)
+    }
+
+    const file = new File(path, Buffer.from(''))
 
     if (!file.fileExists) {
       return this
