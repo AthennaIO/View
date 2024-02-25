@@ -7,12 +7,16 @@
  * file that was distributed with this source code.
  */
 
+import { Env, Config } from '@athenna/config'
 import { ViewImpl } from '#src/views/ViewImpl'
 import { ServiceProvider } from '@athenna/ioc'
 
 export class ViewProvider extends ServiceProvider {
   public register() {
     const view = new ViewImpl()
+
+    view.addProperty('Env', Env)
+    view.addProperty('Config', Config)
 
     this.container.instance('Athenna/Core/View', view)
 
