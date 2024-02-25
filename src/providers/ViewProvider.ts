@@ -13,10 +13,21 @@ import { ServiceProvider } from '@athenna/ioc'
 export class ViewProvider extends ServiceProvider {
   public register() {
     const view = new ViewImpl()
-    const disks = Config.get('view.disks', {})
+
+    this.container.instance('Athenna/Core/View', view)
+
+    if (Config.exists('view.disk')) {
+      view.createViewDisk(Config.get('view.disk'))
+    }
+
+    const disks = Config.get('view.namedDisks')
 
     Object.keys(disks).forEach(k => view.createViewDisk(k, disks[k]))
 
-    this.container.instance('Athenna/Core/View', view)
+    const components = Config.get('view.components', {})
+
+    Object.keys(components).forEach(k =>
+      view.createComponentByPath(k, components[k])
+    )
   }
 }

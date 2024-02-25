@@ -1,7 +1,7 @@
 {
   "name": "@athenna/view",
-  "version": "4.14.0",
-  "description": "The Athenna template engine. Built on top of Edge.",
+  "version": "4.15.0",
+  "description": "The Athenna template engine. Built on top of Edge.js.",
   "license": "MIT",
   "author": "João Lenon <lenon@athenna.io>",
   "bugs": "https://github.com/AthennaIO/View/issues",
@@ -13,6 +13,8 @@
     "edge",
     "html",
     "text",
+    "edgejs",
+    "edge.js",
     "markdown",
     "athenna",
     "template",
@@ -44,7 +46,8 @@
     "./types": "./src/types/index.js",
     "./package": "./package",
     "./package.json": "./package.json",
-    "./providers/ViewProvider": "./src/providers/ViewProvider.js"
+    "./providers/ViewProvider": "./src/providers/ViewProvider.js",
+    "./commands/MakeViewCommand": "./src/commands/MakeViewCommand.js"
   },
   "imports": {
     "#bin/*": "./bin/*.js",
@@ -85,7 +88,10 @@
     "include": [
       "src/**/*.ts"
     ],
-    "exclude": [],
+    "exclude": [
+      "configurer",
+      "src/commands"
+    ],
     "reporter": [
       "text-summary",
       "html"
