@@ -11,10 +11,16 @@ import { ViewImpl } from '#src/views/ViewImpl'
 import { ServiceProvider } from '@athenna/ioc'
 
 export class ViewProvider extends ServiceProvider {
-  public async register() {
+  public register() {
     const view = new ViewImpl()
+
     this.container.instance('Athenna/Core/View', view)
-    const disks = Config.get('view.disks', {})
+
+    if (Config.exists('view.disk')) {
+      view.createViewDisk(Config.get('view.disk'))
+    }
+
+    const disks = Config.get('view.namedDisks')
 
     Object.keys(disks).forEach(k => view.createViewDisk(k, disks[k]))
 

@@ -23,7 +23,7 @@ export class ViewImpl {
   public edge: Edge
 
   public constructor() {
-    this.edge = new Edge(Config.get('view.edge', {}))
+    this.edge = Edge.create(Config.get('view.edge', {}))
   }
 
   /**
@@ -164,20 +164,38 @@ export class ViewImpl {
    *
    * @example
    * ```ts
+   * View.createViewDisk(Path.views())
    * View.createViewDisk('admin', Path.views('admin'))
    *
    * const users = [...]
    *
+   * View.render('admin/listUsers', { users })
    * View.render('admin::listUsers', { users })
+   *
+   * View.render('admin/createUser')
    * View.render('admin::createUser')
+   *
+   * View.render('admin/details/listUserDetails', { users })
    * View.render('admin::details/listUserDetails', { users })
    * ```
    */
-  public createViewDisk(name: string, path: string): ViewImpl {
-    if (this.hasViewDisk(name)) {
-      debug('View disk %s already exists and will be removed first.', name)
+  public createViewDisk(name: string, path?: string): ViewImpl {
+    if (!path) {
+      debug('Creating view disk for path %s.', name)
 
-      this.removeViewDisk(name)
+      if (!isAbsolute(name)) {
+        debug(
+          'Path %s is not absolute and is going to be resolved using cwd %s.',
+          name,
+          Path.pwd()
+        )
+
+        name = resolve(Path.pwd(), name)
+      }
+
+      this.edge.mount(name)
+
+      return this
     }
 
     debug('Creating view disk %s for path %s.', name, path)
@@ -236,6 +254,7 @@ export class ViewImpl {
   public hasViewDisk(name: string): boolean {
     try {
       const path = this.edge.loader.makePath(name)
+
       this.edge.loader.resolve(path)
 
       return true

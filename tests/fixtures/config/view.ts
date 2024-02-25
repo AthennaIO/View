@@ -10,7 +10,9 @@
 import { Path } from '@athenna/common'
 
 export default {
-  disks: {
+  disk: Path.fixtures('views'),
+
+  namedDisks: {
     admin: Path.fixtures('views/admin')
   },
 

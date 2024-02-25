@@ -20,7 +20,7 @@ export default class ViewImplTest {
   @BeforeEach()
   public async beforeEach() {
     await Config.loadAll(Path.fixtures('config'))
-    await new ViewProvider().register()
+    new ViewProvider().register()
   }
 
   @AfterEach()
@@ -192,12 +192,79 @@ export default class ViewImplTest {
     }
   }
 
+  @Test()
+  public async shouldBeAbleToRemoveGlobalPropertiesThatDoesNotExist({ assert }: Context) {
+    View.addProperty('package', '@athenna/view')
+    View.addProperty('module', () => 'providers/ViewProvider')
+
+    {
+      const content = await View.renderRaw('<h1>{{ package }}/{{ module() }}</h1>')
+
+      assert.deepEqual(content, '<h1>@athenna/view/providers/ViewProvider</h1>')
+    }
+
+    View.removeProperty('package')
+    View.removeProperty('module')
+    View.removeProperty('not-found')
+
+    {
+      const content = await View.renderRaw('<h1>{{ package }}/{{ module }}</h1>')
+
+      assert.deepEqual(content, '<h1>undefined/undefined</h1>')
+    }
+  }
+
   // prettier-ignore
   @Test()
   public async shouldBeAbleToCreateViewDisks({ assert }: Context) {
     View.createViewDisk('test', Path.fixtures('views/admin'))
 
     const content = await View.render('test::listUsers', { users: USERS })
+
+    assert.isTrue(content.includes(
+      '  <head>\n' +
+      '    <meta charset="utf-8">\n' +
+      '    <title>Hello World!</title>\n' +
+      '  </head>\n'
+    ))
+  }
+
+  // prettier-ignore
+  @Test()
+  public async shouldBeAbleToCreateViewDisksByRelativePath({ assert }: Context) {
+    View.createViewDisk('test', 'tests/fixtures/views/admin')
+
+    const content = await View.render('test::listUsers', { users: USERS })
+
+    assert.isTrue(content.includes(
+      '  <head>\n' +
+      '    <meta charset="utf-8">\n' +
+      '    <title>Hello World!</title>\n' +
+      '  </head>\n'
+    ))
+  }
+
+  // prettier-ignore
+  @Test()
+  public async shouldBeAbleToCreateDefaultViewDisks({ assert }: Context) {
+    View.createViewDisk(Path.fixtures('views'))
+
+    const content = await View.render('admin/listUsers', { users: USERS })
+
+    assert.isTrue(content.includes(
+      '  <head>\n' +
+      '    <meta charset="utf-8">\n' +
+      '    <title>Hello World!</title>\n' +
+      '  </head>\n'
+    ))
+  }
+
+  // prettier-ignore
+  @Test()
+  public async shouldBeAbleToCreateDefaultViewDisksByRelativePath({ assert }: Context) {
+    View.createViewDisk('tests/fixtures/views/admin')
+
+    const content = await View.render('listUsers', { users: USERS })
 
     assert.isTrue(content.includes(
       '  <head>\n' +
@@ -221,6 +288,16 @@ export default class ViewImplTest {
         '  </head>\n'
       ))
 
+    View.removeViewDisk('test')
+
+    await assert.rejects(() => View.render('test::listUsers'), NotFoundComponentException)
+  }
+
+  @Test()
+  public async shouldBeAbleToRemoveViewDiskThatDoesNotExist({ assert }: Context) {
+    View.createViewDisk('test', Path.fixtures('views/admin'))
+
+    View.removeViewDisk('not-found')
     View.removeViewDisk('test')
 
     await assert.rejects(() => View.render('test::listUsers'), NotFoundComponentException)
@@ -280,6 +357,16 @@ export default class ViewImplTest {
   }
 
   @Test()
+  public async shouldBeAbleToRemoveAComponentThatDoesNotExist({ assert }: Context) {
+    View.createComponent('ui.button', '<button>{{ content }}</button>')
+
+    View.removeComponent('not-found')
+    View.removeComponent('ui.button')
+
+    assert.throws(() => View.renderSync('ui.button'), NotFoundComponentException)
+  }
+
+  @Test()
   public async shouldBeAbleToValidateThatComponentExists({ assert }: Context) {
     View.createComponent('ui.button', '<button>{{ content }}<button>')
 
@@ -317,6 +404,11 @@ export default class ViewImplTest {
   }
 
   @Test()
+  public async shouldNotThrowErrorsWhenCreatingATemplateByFilePathThatDoesNotExist({ assert }: Context) {
+    assert.doesNotThrow(() => View.createTemplateByPath('not-found', Path.fixtures('not-found.edge')))
+  }
+
+  @Test()
   public async shouldNotThrowAlreadyExistTemplateExceptionIfTryingToCreateWithTheSameName({ assert }: Context) {
     assert.doesNotThrow(() => View.createTemplate('button', ''), AlreadyExistComponentException)
   }
@@ -327,6 +419,16 @@ export default class ViewImplTest {
 
     assert.deepEqual(View.renderSync('ui.button', { content: 'Login' }), '<button>Login</button>')
 
+    View.removeTemplate('ui.button')
+
+    assert.throws(() => View.renderSync('ui.button'), NotFoundComponentException)
+  }
+
+  @Test()
+  public async shouldBeAbleToRemoveATemplateThatDoesNotExist({ assert }: Context) {
+    View.createTemplate('ui.button', '<button>{{ content }}</button>')
+
+    View.removeTemplate('not-found')
     View.removeTemplate('ui.button')
 
     assert.throws(() => View.renderSync('ui.button'), NotFoundComponentException)

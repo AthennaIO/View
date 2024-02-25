@@ -10,7 +10,7 @@
 import { Path } from '@athenna/common'
 import { Config } from '@athenna/config'
 import { View, ViewProvider } from '#src'
-import { Test, type Context, AfterEach, BeforeEach, Mock } from '@athenna/test'
+import { Test, type Context, AfterEach, BeforeEach } from '@athenna/test'
 
 export default class ViewProviderTest {
   @BeforeEach()
@@ -20,7 +20,6 @@ export default class ViewProviderTest {
 
   @AfterEach()
   public async afterEach() {
-    Mock.restoreAll()
     ioc.reconstruct()
     Config.clear()
   }
@@ -40,15 +39,22 @@ export default class ViewProviderTest {
   }
 
   @Test()
-  public async shouldRegisterDisksInViewConfigInTheViewInstance({ assert }: Context) {
-    await new ViewProvider().register()
+  public async shouldRegisterDefaultDiskFromViewConfigInTheViewInstance({ assert }: Context) {
+    new ViewProvider().register()
 
-    assert.isTrue(View.hasViewDisk('admin'))
+    assert.isTrue(View.hasViewDisk('admin/listUsers'))
+  }
+
+  @Test()
+  public async shouldRegisterNamedDisksFromViewConfigInTheViewInstance({ assert }: Context) {
+    new ViewProvider().register()
+
+    assert.isTrue(View.hasViewDisk('admin::listUsers'))
   }
 
   @Test()
   public async shouldRegisterTemplatesInViewConfigInTheViewInstance({ assert }: Context) {
-    await new ViewProvider().register()
+    new ViewProvider().register()
 
     assert.isTrue(View.hasComponent('button'))
     assert.isTrue(View.hasComponent('copyright'))
