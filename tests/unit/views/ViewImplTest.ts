@@ -291,6 +291,20 @@ export default class ViewImplTest {
   }
 
   @Test()
+  public async shouldBeAbleToCreateAComponentByARelativeFilePath({ assert }: Context) {
+    View.createComponentByPath('ui.copyright', 'tests/fixtures/views/components/copyright.edge')
+
+    const content = await View.render('ui.copyright', {
+      package: 'view',
+      author: 'lenon',
+      email: 'lenon'
+    })
+
+    assert.isTrue(content.includes('@athenna/view'))
+    assert.isTrue(content.includes('lenon <lenon>'))
+  }
+
+  @Test()
   public async shouldThrowAlreadyExistComponentExceptionIfTryingToCreateWithTheSameName({ assert }: Context) {
     assert.throws(() => View.createComponent('button', ''), AlreadyExistComponentException)
   }
@@ -342,6 +356,20 @@ export default class ViewImplTest {
   @Test()
   public async shouldBeAbleToCreateATemplateByFilePath({ assert }: Context) {
     View.createTemplateByPath('ui.copyright', Path.fixtures('views/components/copyright.edge'))
+
+    const content = await View.render('ui.copyright', {
+      package: 'view',
+      author: 'lenon',
+      email: 'lenon'
+    })
+
+    assert.isTrue(content.includes('@athenna/view'))
+    assert.isTrue(content.includes('lenon <lenon>'))
+  }
+
+  @Test()
+  public async shouldBeAbleToCreateATemplateByRelativeFilePath({ assert }: Context) {
+    View.createTemplateByPath('ui.copyright', 'tests/fixtures/views/components/copyright.edge')
 
     const content = await View.render('ui.copyright', {
       package: 'view',
