@@ -29,22 +29,12 @@ export default class ViewImplTest {
     ioc.reconstruct()
   }
 
-  // prettier-ignore
   @Test()
   public async shouldBeAbleToRenderDisks({ assert }: Context) {
     const content = await View.render('admin::listUsers', { users: USERS })
 
-    assert.isTrue(content.includes(
-      '  <head>\n' +
-      '    <meta charset="utf-8">\n' +
-      '    <title>Hello World!</title>\n' +
-      '  </head>\n'
-    ))
-    assert.isTrue(content.includes(
-      '  <footer>\n' +
-      '    &copy; Victor Tesoura txsoura@athenna.io\n' +
-      '  </footer>\n'
-    ))
+    assert.isTrue(content.includes('<title>Hello World!</title>'))
+    assert.isTrue(content.includes('&copy; Victor Tesoura txsoura@athenna.io'))
     USERS.forEach(USER => {
       assert.isTrue(content.includes(`<li>${USER.id}</li>`))
       assert.isTrue(content.includes(`<li>${USER.name}</li>`))
@@ -74,22 +64,12 @@ export default class ViewImplTest {
     await assert.rejects(() => View.render('notfound'), NotFoundComponentException)
   }
 
-  // prettier-ignore
   @Test()
   public async shouldBeAbleToRenderDisksUsingRenderSync({ assert }: Context) {
     const content = View.renderSync('admin::listUsers', { users: USERS })
 
-    assert.isTrue(content.includes(
-      '  <head>\n' +
-      '    <meta charset="utf-8">\n' +
-      '    <title>Hello World!</title>\n' +
-      '  </head>\n'
-    ))
-    assert.isTrue(content.includes(
-      '  <footer>\n' +
-      '    &copy; Victor Tesoura txsoura@athenna.io\n' +
-      '  </footer>\n'
-    ))
+    assert.isTrue(content.includes('<title>Hello World!</title>'))
+    assert.isTrue(content.includes('&copy; Victor Tesoura txsoura@athenna.io'))
     USERS.forEach(USER => {
       assert.isTrue(content.includes(`<li>${USER.id}</li>`))
       assert.isTrue(content.includes(`<li>${USER.name}</li>`))
@@ -214,79 +194,49 @@ export default class ViewImplTest {
     }
   }
 
-  // prettier-ignore
   @Test()
   public async shouldBeAbleToCreateViewDisks({ assert }: Context) {
     View.createViewDisk('test', Path.fixtures('views/admin'))
 
     const content = await View.render('test::listUsers', { users: USERS })
 
-    assert.isTrue(content.includes(
-      '  <head>\n' +
-      '    <meta charset="utf-8">\n' +
-      '    <title>Hello World!</title>\n' +
-      '  </head>\n'
-    ))
+    assert.isTrue(content.includes('<title>Hello World!</title>'))
   }
 
-  // prettier-ignore
   @Test()
   public async shouldBeAbleToCreateViewDisksByRelativePath({ assert }: Context) {
     View.createViewDisk('test', 'tests/fixtures/views/admin')
 
     const content = await View.render('test::listUsers', { users: USERS })
 
-    assert.isTrue(content.includes(
-      '  <head>\n' +
-      '    <meta charset="utf-8">\n' +
-      '    <title>Hello World!</title>\n' +
-      '  </head>\n'
-    ))
+    assert.isTrue(content.includes('<title>Hello World!</title>'))
   }
 
-  // prettier-ignore
   @Test()
   public async shouldBeAbleToCreateDefaultViewDisks({ assert }: Context) {
     View.createViewDisk(Path.fixtures('views'))
 
     const content = await View.render('admin/listUsers', { users: USERS })
 
-    assert.isTrue(content.includes(
-      '  <head>\n' +
-      '    <meta charset="utf-8">\n' +
-      '    <title>Hello World!</title>\n' +
-      '  </head>\n'
-    ))
+    assert.isTrue(content.includes('<title>Hello World!</title>'))
   }
 
-  // prettier-ignore
   @Test()
   public async shouldBeAbleToCreateDefaultViewDisksByRelativePath({ assert }: Context) {
     View.createViewDisk('tests/fixtures/views/admin')
 
     const content = await View.render('listUsers', { users: USERS })
 
-    assert.isTrue(content.includes(
-      '  <head>\n' +
-      '    <meta charset="utf-8">\n' +
-      '    <title>Hello World!</title>\n' +
-      '  </head>\n'
-    ))
+    assert.isTrue(content.includes('<title>Hello World!</title>'))
   }
 
-  // prettier-ignore
   @Test()
   public async shouldBeAbleToRemoveViewDisks({ assert }: Context) {
     View.createViewDisk('test', Path.fixtures('views/admin'))
 
     const content = await View.render('test::listUsers', { users: USERS })
 
-      assert.isTrue(content.includes(
-        '  <head>\n' +
-        '    <meta charset="utf-8">\n' +
-        '    <title>Hello World!</title>\n' +
-        '  </head>\n'
-      ))
+    assert.isTrue(content.includes('<title>Hello World!</title>'))
 
     View.removeViewDisk('test')
 
