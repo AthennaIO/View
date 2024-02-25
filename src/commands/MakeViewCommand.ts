@@ -36,6 +36,7 @@ export class MakeViewCommand extends BaseCommand {
     )
     const file = await this.generator
       .fileName(this.name)
+      .extension('edge')
       .destination(destination)
       .template('view')
       .setNameProperties(true)

@@ -37,7 +37,7 @@ export default class ViewConfigurer extends BaseConfigurer {
         .setTo(
           'templates',
           'view',
-          'node_modules/@athenna/view/templates/model.edge'
+          'node_modules/@athenna/view/templates/view.edge'
         )
         .save()
     })
