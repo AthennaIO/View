@@ -10,8 +10,8 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 
-import { Env } from '@athenna/config'
 import { Path } from '@athenna/common'
+import { Env, Config } from '@athenna/config'
 
 export default {
   /*
@@ -24,6 +24,7 @@ export default {
   | ```typescript
   | // Render the Path.views('home.edge') file
   | View.render('home')
+  |
   | // Render the Path.views('pages/posts/post.edge') file
   | View.render('pages/posts/post')
   | ```
@@ -50,20 +51,32 @@ export default {
 
   /*
   |--------------------------------------------------------------------------
-  | View components
+  | In memory view components
   |--------------------------------------------------------------------------
   |
   | Here you may define your in-memory components. Components works exactly
-  | like the `disk` to be rendered, the only difference is that they are
-  | saved in-memory.
-  |
-  | ```typescript
-  | View.render('button', { content: 'Login' })
-  | ```
+  | like any other view, the only difference is that they are saved in-memory
+  | instead of reloading the view file every-time.
   |
   */
 
   components: {},
+
+  /*
+  |--------------------------------------------------------------------------
+  | Shared global properties
+  |--------------------------------------------------------------------------
+  |
+  | Here you may define the properties you want to be available between all
+  | your views. By default, we have already set the `env` and `config`
+  | helpers for you.
+  |
+  */
+
+  properties: {
+    env: Env,
+    config: Config
+  },
 
   /*
   |--------------------------------------------------------------------------

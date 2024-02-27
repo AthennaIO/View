@@ -8,12 +8,18 @@
  */
 
 import { Path } from '@athenna/common'
+import { Env, Config } from '@athenna/config'
 
 export default {
   disk: Path.fixtures('views'),
 
   namedDisks: {
     admin: Path.fixtures('views/admin')
+  },
+
+  properties: {
+    env: Env,
+    config: Config
   },
 
   components: {
