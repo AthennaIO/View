@@ -53,7 +53,16 @@ export default class ViewProviderTest {
   }
 
   @Test()
-  public async shouldRegisterTemplatesInViewConfigInTheViewInstance({ assert }: Context) {
+  public async shouldRegisterPropertiesToBeAvailableToAllViewsInViewConfigInTheViewInstance({ assert }: Context) {
+    new ViewProvider().register()
+
+    assert.isDefined(View.edge.globals.env)
+    assert.isDefined(View.edge.globals.config)
+    assert.isUndefined(View.edge.globals.notFound)
+  }
+
+  @Test()
+  public async shouldRegisterComponentsInViewConfigInTheViewInstance({ assert }: Context) {
     new ViewProvider().register()
 
     assert.isTrue(View.hasComponent('button'))

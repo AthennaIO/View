@@ -7,16 +7,13 @@
  * file that was distributed with this source code.
  */
 
-import { Env, Config } from '@athenna/config'
+import { Config } from '@athenna/config'
 import { ViewImpl } from '#src/views/ViewImpl'
 import { ServiceProvider } from '@athenna/ioc'
 
 export class ViewProvider extends ServiceProvider {
   public register() {
     const view = new ViewImpl()
-
-    view.addProperty('Env', Env)
-    view.addProperty('Config', Config)
 
     this.container.instance('Athenna/Core/View', view)
 
@@ -27,6 +24,10 @@ export class ViewProvider extends ServiceProvider {
     const disks = Config.get('view.namedDisks', {})
 
     Object.keys(disks).forEach(k => view.createViewDisk(k, disks[k]))
+
+    const properties = Config.get('view.properties', {})
+
+    Object.keys(properties).forEach(k => view.addProperty(k, properties[k]))
 
     const components = Config.get('view.components', {})
 
