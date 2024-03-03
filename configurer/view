@@ -7,9 +7,6 @@
  * file that was distributed with this source code.
  */
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
-
 import { Path } from '@athenna/common'
 import { Env, Config } from '@athenna/config'
 
