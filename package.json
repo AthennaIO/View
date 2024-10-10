@@ -60,7 +60,7 @@
     "#tests": "./tests/index.js"
   },
   "dependencies": {
-    "edge.js": "^6.0.2"
+    "edge.js": "^6.1.1"
   },
   "devDependencies": {
     "@athenna/common": "^5.0.0",
