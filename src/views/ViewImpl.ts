@@ -258,7 +258,7 @@ export class ViewImpl {
       this.edge.loader.resolve(path)
 
       return true
-    } catch (err) {
+    } catch (_err) {
       const has = this.edge.loader.mounted[name]
 
       return !!has
