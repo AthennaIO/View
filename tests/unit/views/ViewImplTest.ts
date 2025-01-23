@@ -195,6 +195,72 @@ export default class ViewImplTest {
   }
 
   @Test()
+  public async shouldBeAbleToAddTagsToBeUsedByAllViews({ assert }: Context) {
+    View.addTag('reverse', {
+      block: false,
+      seekable: true,
+      compile(_, buffer) {
+        buffer.outputRaw('Hello from reverse tag')
+      }
+    })
+
+    const content = await View.renderRaw('@reverse()')
+
+    assert.deepEqual(content, 'Hello from reverse tag')
+  }
+
+  @Test()
+  public async shouldBeAbleToRemoveGlobalTags({ assert }: Context) {
+    View.addTag('reverse', {
+      block: false,
+      seekable: true,
+      compile(_, buffer) {
+        buffer.outputRaw('Hello from reverse tag')
+      }
+    })
+
+    {
+      const content = await View.renderRaw('@reverse()')
+
+      assert.deepEqual(content, 'Hello from reverse tag')
+    }
+
+    View.removeTag('reverse')
+
+    {
+      const content = await View.renderRaw('@reverse()')
+
+      assert.deepEqual(content, '@reverse()')
+    }
+  }
+
+  @Test()
+  public async shouldBeAbleToRemoveGlobalTagsThatDoesNotExist({ assert }: Context) {
+    View.addTag('reverse', {
+      block: false,
+      seekable: true,
+      compile(_, buffer) {
+        buffer.outputRaw('Hello from reverse tag')
+      }
+    })
+
+    {
+      const content = await View.renderRaw('@reverse()')
+
+      assert.deepEqual(content, 'Hello from reverse tag')
+    }
+
+    View.removeTag('reverse')
+    View.removeTag('not-found')
+
+    {
+      const content = await View.renderRaw('@reverse()')
+
+      assert.deepEqual(content, '@reverse()')
+    }
+  }
+
+  @Test()
   public async shouldBeAbleToCreateViewDisks({ assert }: Context) {
     View.createViewDisk('test', Path.fixtures('views/admin'))
 

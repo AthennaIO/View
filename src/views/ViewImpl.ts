@@ -11,18 +11,20 @@ import { Edge } from 'edge.js'
 import { debug } from '#src/debug'
 import { Config } from '@athenna/config'
 import { resolve, isAbsolute } from 'node:path'
-import { Is, File, Path } from '@athenna/common'
+import type { TagContract } from '#src/types/TagContract'
+import { Is, File, Path, Macroable } from '@athenna/common'
 import { EmptyComponentException } from '#src/exceptions/EmptyComponentException'
 import { NotFoundComponentException } from '#src/exceptions/NotFoundComponentException'
 import { AlreadyExistComponentException } from '#src/exceptions/AlreadyExistComponentException'
 
-export class ViewImpl {
+export class ViewImpl extends Macroable {
   /**
    * Edge instance that is handling all the views.
    */
   public edge: Edge
 
   public constructor() {
+    super()
     this.edge = Edge.create(Config.get('view.edge', {}))
   }
 
@@ -148,6 +150,54 @@ export class ViewImpl {
     }
 
     delete this.edge.globals[key]
+
+    return this
+  }
+
+  /**
+   * Add a new tag to templates. Just like @component
+   * @if, etc.
+   *
+   * @example
+   * ```ts
+   * import type { TagContract } from '@athenna/view'
+   *
+   * const reverseTagOptions: TagContract = {
+   *   block: false,
+   *   seekable: true,
+   *   compile(parser, buffer, token) {
+   *     buffer.outputRaw('Hello from reverse tag')
+   *   }
+   * }
+   *
+   * View.addTag('reverse', reverseTagOptions)
+   *
+   * const output = await View.renderRaw('@reverse()') // 'Hello from reverse tag'
+   * ```
+   */
+  public addTag(name: string, options: TagContract) {
+    this.edge.registerTag({ tagName: name, ...options })
+
+    return this
+  }
+
+  /**
+   * Remove some tag from views registered using
+   * "addTag" method.
+   *
+   * @example
+   * ```ts
+   * View
+   *  .addTag('reverse', { ... })
+   *  .removeTag('reverse')
+   * ```
+   */
+  public removeTag(name: string) {
+    if (!this.edge.tags[name]) {
+      return this
+    }
+
+    delete this.edge.tags[name]
 
     return this
   }
